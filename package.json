@@ -1,0 +1,36 @@
+{
+  "name": "markitdown-yoshi",
+  "version": "0.2.0",
+  "description": "自作MCPサーバー — Microsoft markitdown CLIをラップし、PDF/Word/Excel/PPT/画像/音声をMarkdownに変換する + PDFスキャン/テキスト分類（pypdf内製のL1判定）— ちゃんと変換してヨシッ！",
+  "main": "src/index.js",
+  "type": "module",
+  "bin": {
+    "markitdown-yoshi": "bin/markitdown-yoshi.js"
+  },
+  "scripts": {
+    "start": "node bin/markitdown-yoshi.js",
+    "test": "node test/smoke.test.js"
+  },
+  "keywords": [
+    "mcp",
+    "markitdown",
+    "claude-code",
+    "pdf",
+    "markdown",
+    "converter"
+  ],
+  "author": "aliksir",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.11.0"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "LICENSE",
+    "README.md"
+  ]
+}
