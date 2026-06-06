@@ -16,8 +16,16 @@ const DEFAULT_ALLOWED_ROOTS = [
 function parseAllowedRoots() {
   const envVar = process.env.MARKITDOWN_YOSHI_ALLOWED_ROOTS;
   const roots = envVar ? envVar.split(';') : DEFAULT_ALLOWED_ROOTS;
-  // 正規化: OSパス形式に揃える + 小文字化（Windowsの大文字小文字無視対応）
-  return roots.map(r => path.resolve(r).replace(/\\/g, '/').toLowerCase());
+  return roots
+    .map(r => path.resolve(r).replace(/\\/g, '/').toLowerCase())
+    .filter(r => {
+      // ファイルシステムルートやホームディレクトリ直下は拒否（セキュリティ）
+      if (r === '/' || /^[a-z]:\/$/i.test(r) || r === HOME.replace(/\\/g, '/').toLowerCase()) {
+        process.stderr.write(`[markitdown-yoshi] 許可ルートが広すぎます（無視）: ${r}\n`);
+        return false;
+      }
+      return true;
+    });
 }
 
 export const CONFIG = Object.freeze({
