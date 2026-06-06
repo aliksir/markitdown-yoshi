@@ -10,7 +10,7 @@ Microsoft markitdown CLIをラップした自作MCPサーバー。PDF・Word・E
 
 ## セットアップ
 ```bash
-cd C:/work/markitdown-yoshi
+cd markitdown-yoshi
 npm install
 ```
 

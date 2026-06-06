@@ -4,6 +4,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
+
+
 import assert from 'node:assert/strict';
 import { convert, validatePath, supportedFormats, _clearCache } from '../src/converter.js';
 import { classifyPdf, _clearCache as _clearClassifierCache } from '../src/classifier.js';
@@ -37,7 +39,7 @@ async function assertThrows(fn, pattern, msg) {
 }
 
 // テスト用の一時ファイル準備（C:/work/配下 = 許可ディレクトリ内）
-const TMP_DIR = path.join('C:/work', '_markitdown_yoshi_test');
+const TMP_DIR = path.join(process.cwd(), '_test_tmp');
 const SMALL_TXT = path.join(TMP_DIR, 'small.txt');
 const LARGE_BIN = path.join(TMP_DIR, 'large.bin');
 
@@ -80,14 +82,14 @@ await test('validatePath: 許可外パス（相対パスでの脱出試行）で
 
 await test('validatePath: 存在しないファイルでエラー', async () => {
   assert.throws(
-    () => validatePath('C:/work/does-not-exist-xyz-123.pdf'),
+    () => validatePath(path.join(process.cwd(), 'does-not-exist-xyz-123.pdf')),
     /not found/i
   );
 });
 
 await test('validatePath: ディレクトリ指定でエラー', async () => {
   assert.throws(
-    () => validatePath('C:/work'),
+    () => validatePath(process.cwd()),
     /not a regular file/i
   );
 });

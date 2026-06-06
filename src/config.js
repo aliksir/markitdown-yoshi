@@ -2,12 +2,15 @@
 import path from 'node:path';
 
 // 許可ディレクトリ（この配下のファイルのみ変換可能）
-// 新たなディレクトリを追加したい場合は環境変数 MARKITDOWN_YOSHI_ALLOWED_ROOTS で上書き可能（;区切り）
+// 環境変数 MARKITDOWN_YOSHI_ALLOWED_ROOTS で上書き可能（;区切り）
+import os from 'node:os';
+
+const HOME = os.homedir();
 const DEFAULT_ALLOWED_ROOTS = [
-  'C:/work',
-  'C:/Users/aliks/Documents',
-  'C:/Users/aliks/Downloads',
-  'C:/Users/aliks/Desktop'
+  process.cwd(),
+  path.join(HOME, 'Documents'),
+  path.join(HOME, 'Downloads'),
+  path.join(HOME, 'Desktop'),
 ];
 
 function parseAllowedRoots() {
