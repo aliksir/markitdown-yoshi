@@ -1,22 +1,24 @@
+> Japanese version: [README.ja.md](README.ja.md)
+
 # markitdown-yoshi
 
-> ちゃんと変換してヨシッ！
+> Convert it properly... Yoshi!
 
-Microsoft markitdown CLIをラップした自作MCPサーバー。Claude CodeからPDF・Word・Excel・PPT・画像・音声などをMarkdownに変換できる。
+A self-hosted MCP server wrapping Microsoft's markitdown CLI. Converts PDF, Word, Excel, PowerPoint, images, audio, and more to Markdown directly from Claude Code.
 
-## なぜ自作か
+## Why build our own?
 
-- **外部API不使用・ローカル処理のみ**: テレメトリゼロ・課金ゼロ
-- **セキュリティ制御**: パストラバーサル・サイズ爆発・タイムアウト・並列数を自前で制御
-- **既存CLIに委譲**: 変換ロジックは `python -m markitdown` に全委譲、メンテ負担最小
+- **No external APIs, local processing only**: Zero telemetry, zero cost
+- **Security controls**: Path traversal prevention, size limits, timeouts, and concurrency caps -- all managed internally
+- **Delegates to the existing CLI**: All conversion logic is handled by `python -m markitdown`, keeping maintenance minimal
 
-## 要件
+## Requirements
 
 - Node.js 18+
-- Python 3.10+ + markitdown (`pip install 'markitdown[all]'`)
-- （任意）pypdf (`pip install pypdf`) — PDF classifier 機能用。未導入時は classification が `null` になるだけで変換本体は動作
+- Python 3.10+ with markitdown (`pip install 'markitdown[all]'`)
+- (Optional) pypdf (`pip install pypdf`) -- for PDF classifier. Without it, classification returns `null` but conversion works fine
 
-## セットアップ
+## Setup
 
 ```bash
 git clone https://github.com/aliksir/markitdown-yoshi.git
@@ -24,9 +26,9 @@ cd markitdown-yoshi
 npm install
 ```
 
-## Claude Code MCP 登録
+## Claude Code MCP Registration
 
-`.mcp.json` に追記:
+Add to your `.mcp.json`:
 
 ```json
 {
@@ -39,34 +41,34 @@ npm install
 }
 ```
 
-## 提供ツール
+## Available Tools
 
 ### `convert(file_path, max_chars?)`
-ファイルをMarkdownに変換する。許可ディレクトリ配下のみ対応。
+Converts a file to Markdown. Only files within allowed directories are accepted.
 
-- 戻り値: `{ markdown, truncated, cached, pdf_classification? }`（PDFの場合のみ `pdf_classification` 自動付与。キャッシュヒット時は省略）
-- デフォルト上限: 入力10MB、出力500KB、タイムアウト30秒、並列2
+- Returns: `{ markdown, truncated, cached, pdf_classification? }` (`pdf_classification` is included only for PDFs; omitted on cache hits)
+- Default limits: 10 MB input, 500 KB output, 30-second timeout, 2 concurrent conversions
 
-### `classify_pdf(file_path)` （v0.2.0+）
-PDFをテキストベース/スキャン画像/混在に分類する。pdf-inspector (firecrawl) のL1判定相当を pypdf で内製。
+### `classify_pdf(file_path)` (v0.2.0+)
+Classifies a PDF as text-based, scanned, or mixed. An in-house implementation equivalent to pdf-inspector (firecrawl) L1 classification using pypdf.
 
-- 戻り値: `{ pdf_type: "TextBased"|"Scanned"|"Mixed"|"Unknown", page_count, pages_needing_ocr, confidence, text_pages, empty_pages, cached }`
-- 判定アルゴ: 各ページの `extract_text()` 長 ≥ 5文字で text判定、比率から分類（L1 = Tj/TJ 相当のみ）
-- L1スコープのため `ImageBased`（Do operator検出ベース）は返さない。スキャンPDFは `Scanned`
-- 外部通信なし（pypdfは純Python、MIT）
-- pypdf未導入時は `{ pdf_type: "Unknown", error: "pypdf not installed..." }` でgraceful return
+- Returns: `{ pdf_type: "TextBased"|"Scanned"|"Mixed"|"Unknown", page_count, pages_needing_ocr, confidence, text_pages, empty_pages, cached }`
+- Algorithm: Each page's `extract_text()` output is checked for length >= 5 characters to determine text presence; the ratio determines classification (L1 = Tj/TJ operator level only)
+- L1 scope means `ImageBased` (Do operator detection) is not returned; scanned PDFs are classified as `Scanned`
+- No external communication (pypdf is pure Python, MIT licensed)
+- If pypdf is not installed, returns `{ pdf_type: "Unknown", error: "pypdf not installed..." }` gracefully
 
 ### `supported_formats()`
-対応ファイル形式の一覧を返す。
+Returns a list of supported file formats.
 
-## セキュリティ
+## Security
 
-詳細は `CLAUDE.md` の「セキュリティモデル」参照。
+See the "Security Model" section in `CLAUDE.md` for details.
 
-## 関連ツール
+## Related Tools
 
-- [pii-mask-yoshi](https://github.com/aliksir/pii-mask-yoshi) — PII自動マスクMCPサーバー。`safe_read` でバイナリファイルを読む際に `python -m markitdown` を直接呼び出す（markitdown-yoshiとは独立動作）
-- [neko-not-yoshi](https://github.com/aliksir/neko-not-yoshi) — NGワード・カスタムパターン定義
+- [pii-mask-yoshi](https://github.com/aliksir/pii-mask-yoshi) -- PII auto-masking MCP server. Calls `python -m markitdown` directly when reading binary files via `safe_read` (operates independently from markitdown-yoshi)
+- [neko-not-yoshi](https://github.com/aliksir/neko-not-yoshi) -- Blocked word and custom pattern definitions
 
-## ライセンス
+## License
 MIT
